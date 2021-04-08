@@ -11,10 +11,8 @@ class _CreateRecallState extends State<CreateRecall> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Expanded(
-        child: Container(
-          color: Colors.lightBlueAccent,
-        ),
+      body: Container(
+        color: Colors.lightBlueAccent,
       ),
     );
   }

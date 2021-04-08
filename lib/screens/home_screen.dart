@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:recall/screens/create_recall.dart';
+import 'package:recall/screens/recall_list.dart';
+import 'package:recall/values/app_constants.dart';
 import 'package:recall/values/custom_app_theme.dart';
 import 'package:recall/widgets/custom_tabs.dart';
 
@@ -66,6 +68,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       children: [
                         Container(
+                          margin: EdgeInsets.only(
+                            bottom: 10,
+                          ),
                           constraints: BoxConstraints.expand(height: 50),
                           child: CustomTabBar(
                             isScrollable: true,
@@ -114,11 +119,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         Expanded(
                           child: CustomTabBarView(
                             children: [
-                              Container(
-                                color: Colors.lightGreenAccent,
+                              RecallList(
+                                type: RecallType.HABIT,
                               ),
-                              Container(
-                                color: Colors.lightBlueAccent,
+                              RecallList(
+                                type: RecallType.REVISION,
                               ),
                             ],
                           ),
