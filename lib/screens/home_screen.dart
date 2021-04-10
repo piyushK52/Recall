@@ -27,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
       value: CustomAppTheme.systemUiOverlayConstant,
       child: SafeArea(
         child: Scaffold(
+          backgroundColor: Colors.white,
           floatingActionButton: FloatingActionButton(
             onPressed: () {
               Navigator.pushNamed(context, CreateRecall.routeName)
