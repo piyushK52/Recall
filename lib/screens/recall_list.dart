@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:recall/screens/recall_details.dart';
 import 'package:recall/values/app_constants.dart';
 import 'package:recall/values/custom_app_theme.dart';
 
@@ -27,7 +28,11 @@ class _RecallListState extends State<RecallList> {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+            return RecallDetails(type: widget.type);
+          }));
+        },
         highlightColor: Colors.transparent,
         child: Container(
           // height: 80,

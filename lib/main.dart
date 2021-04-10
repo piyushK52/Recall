@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:recall/screens/create_recall.dart';
 import 'package:recall/screens/home_screen.dart';
+import 'package:recall/screens/recall_details.dart';
 import 'package:recall/screens/recall_list.dart';
 
 void main() {
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
         HomeScreen.routeName: (ctx) => HomeScreen(),
         CreateRecall.routeName: (ctx) => CreateRecall(),
         RecallList.routeName: (ctx) => RecallList(),
+        RecallDetails.routeName: (ctx) => RecallDetails(),
       },
     );
   }
