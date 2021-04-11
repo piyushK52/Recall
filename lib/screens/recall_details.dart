@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:recall/values/app_constants.dart';
 import 'package:recall/values/custom_app_theme.dart';
+import 'package:recall/widgets/pill.dart';
+import 'package:recall/widgets/recall_files.dart';
 
 class RecallDetails extends StatefulWidget {
   static const routeName = './home-screen/recall-details';
@@ -75,25 +77,9 @@ class _RecallDetailsState extends State<RecallDetails> {
                         ),
                       ),
                       Spacer(),
-                      Container(
-                        alignment: Alignment.center,
-                        height: 25,
-                        padding: EdgeInsets.only(
-                          left: 8,
-                          right: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: CustomAppTheme.primaryColor.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Text(
-                          "Mark Complete",
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: CustomAppTheme.darkPrimaryColor,
-                          ),
-                        ),
+                      ActionPill(
+                        text: "Mark Complete",
+                        action: () {},
                       ),
                       Spacer(),
                     ],
@@ -213,20 +199,41 @@ class _RecallDetailsState extends State<RecallDetails> {
                   ),
                 ),
                 Container(
-                  alignment: Alignment.centerLeft,
                   margin: EdgeInsets.only(
-                    top: 10,
-                    left: 30,
-                    right: 30,
-                    bottom: 10,
+                    right: 20,
                   ),
-                  child: Text(
-                    "Files",
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        margin: EdgeInsets.only(
+                          top: 10,
+                          left: 30,
+                          right: 30,
+                          bottom: 10,
+                        ),
+                        child: Text(
+                          "Files",
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      ActionPill(
+                        text: "Add Files",
+                        action: () {},
+                      ),
+                    ],
                   ),
+                ),
+                RecallFiles(
+                  files: [
+                    'a',
+                    'b',
+                    'c',
+                  ],
                 ),
               ],
             ),
