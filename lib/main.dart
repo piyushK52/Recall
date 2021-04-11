@@ -3,6 +3,7 @@ import 'package:recall/screens/create_recall.dart';
 import 'package:recall/screens/home_screen.dart';
 import 'package:recall/screens/recall_details.dart';
 import 'package:recall/screens/recall_list.dart';
+import 'package:recall/screens/session_list.dart';
 import 'package:recall/widgets/recall_files.dart';
 
 void main() {
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
         RecallList.routeName: (ctx) => RecallList(),
         RecallDetails.routeName: (ctx) => RecallDetails(),
         RecallFiles.routeName: (ctx) => RecallFiles(),
+        SessionList.routeName: (ctx) => SessionList(),
       },
     );
   }

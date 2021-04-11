@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:recall/screens/session_list.dart';
 import 'package:recall/values/app_constants.dart';
 import 'package:recall/values/custom_app_theme.dart';
+import 'package:recall/widgets/header.dart';
 import 'package:recall/widgets/pill.dart';
 import 'package:recall/widgets/recall_files.dart';
 
@@ -35,60 +37,28 @@ class _RecallDetailsState extends State<RecallDetails> {
             width: _width,
             child: Column(
               children: [
-                Container(
-                  height: 50,
-                  margin: EdgeInsets.only(
-                    top: 5,
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.of(context).pop("random");
-                          },
-                          highlightColor: Colors.transparent,
-                          child: Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: Icon(
-                              Icons.arrow_back,
-                              size: 25,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        constraints: BoxConstraints(
-                          maxWidth: 220,
-                        ),
-                        child: Text(
-                          'Some random text that is too long',
-                          style: CustomAppTheme.heading1.copyWith(
-                            fontSize: 22,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      Spacer(),
-                      ActionPill(
-                        text: "Mark Complete",
-                        action: () {},
-                      ),
-                      Spacer(),
-                    ],
+                Header(
+                  headerText: 'Some random text which is very long',
+                  onPop: () {
+                    Navigator.of(context).pop("random");
+                  },
+                  actionPill: ActionPill(
+                    text: "Mark Complete",
+                    action: () {},
                   ),
                 ),
                 Material(
                   color: Colors.transparent,
                   child: InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (context) {
+                        return SessionList(
+                          sessions: [DateTime.now(), DateTime.now()],
+                          completed: 1,
+                        );
+                      }));
+                    },
                     child: Container(
                       padding: EdgeInsets.only(
                         left: 30,
