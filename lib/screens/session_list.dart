@@ -25,6 +25,7 @@ class SessionList extends StatelessWidget {
         body: Container(
           height: _height,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Header(
                 headerText: 'Some random text which is very long',
@@ -57,7 +58,7 @@ class SessionList extends StatelessWidget {
         left: 20,
         right: 20,
       ),
-      color: Colors.lightBlueAccent,
+      // color: Colors.lightBlueAccent,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -105,7 +106,11 @@ class SessionList extends StatelessWidget {
               left: 20,
             ),
             child: Text(
-              DateFormat('dd MMM yyyy   hh:mm a').format(sessions[index]),
+              DateFormat('dd MMM yyyy   hh:mm a').format(sessions[index]) +
+                  '  ( 2 Days )',
+              style: TextStyle(
+                fontSize: 15,
+              ),
             ),
           ),
         ],
