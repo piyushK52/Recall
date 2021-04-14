@@ -58,7 +58,9 @@ class _WeekDaySelectorState extends State<WeekDaySelector> {
         child: Text(
           (idx + 1).toString(),
           style: TextStyle(
-            color: widget.selectedDays[idx] ? Colors.white : Colors.black,
+            color: widget.selectedDays[idx]
+                ? Colors.white
+                : CustomAppTheme.primaryColor,
           ),
         ),
       ),
