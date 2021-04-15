@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:recall/values/custom_app_theme.dart';
 import 'package:recall/widgets/header.dart';
 import 'package:recall/widgets/revision_gaps.dart';
 import 'package:recall/widgets/weekday_selector.dart';
 import 'package:date_format/date_format.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:open_file/open_file.dart';
 
 class CreateRecall extends StatefulWidget {
   static const routeName = '/home-screen/create-recall';
@@ -29,6 +32,7 @@ class _CreateRecallState extends State<CreateRecall> {
   String sessionValue = '';
   TimeOfDay selectedTime = TimeOfDay(hour: 00, minute: 00);
   String selectedTimeString = 'Select a Time', descriptionText = '';
+  List<String> filePaths = [];
 
   Future<Null> _selectTime(BuildContext context) async {
     final TimeOfDay picked = await showTimePicker(
@@ -58,50 +62,52 @@ class _CreateRecallState extends State<CreateRecall> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: Container(
-          height: _height,
-          width: _width,
-          child: Column(
-            children: [
-              Header(
-                headerText: 'Create Recall',
-                onPop: () {
-                  Navigator.of(context).pop("refresh");
-                },
-              ),
-              Container(
-                width: _width,
-                // color: Colors.lightBlueAccent,
-                margin: EdgeInsets.only(
-                  top: 20,
+        body: SingleChildScrollView(
+          child: Container(
+            height: _height,
+            width: _width,
+            child: Column(
+              children: [
+                Header(
+                  headerText: 'Create Recall',
+                  onPop: () {
+                    Navigator.of(context).pop("refresh");
+                  },
                 ),
-                padding: EdgeInsets.only(
-                  left: 20,
-                  right: 20,
+                Container(
+                  width: _width,
+                  // color: Colors.lightBlueAccent,
+                  margin: EdgeInsets.only(
+                    top: 20,
+                  ),
+                  padding: EdgeInsets.only(
+                    left: 20,
+                    right: 20,
+                  ),
+                  child: Column(
+                    children: [
+                      _typeSelection(),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      _sessionSelection(),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      _timeSelection(),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      _description(),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      _fileLinks(),
+                    ],
+                  ),
                 ),
-                child: Column(
-                  children: [
-                    _typeSelection(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    _sessionSelection(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    _timeSelection(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    _description(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    _fileLinks(),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -249,14 +255,33 @@ class _CreateRecallState extends State<CreateRecall> {
               top: 10,
             ),
             // color: Colors.lightBlue,
-            child: TextFormField(
-              initialValue: descriptionText,
-              decoration: InputDecoration(hintText: "Enter a description"),
-              onChanged: (text) {
-                descriptionText = text;
+            child: GestureDetector(
+              onTap: () async {
+                FilePickerResult result =
+                    await FilePicker.platform.pickFiles(allowMultiple: false);
+                if (result != null) {
+                  PlatformFile file = result.files.first;
+                  filePaths.add(file.path);
+                }
+
+                // else {
+                //   print("file path stored is $filePath");
+                //   OpenFile.open(filePath);
+                // }
               },
-              minLines: 4,
-              maxLines: 4,
+              child: Container(
+                height: 80,
+                width: 80,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  color: CustomAppTheme.primaryColor.withOpacity(0.3),
+                ),
+                child: Icon(
+                  Icons.add,
+                  size: 35,
+                  color: Colors.white,
+                ),
+              ),
             ),
           ),
         ],
