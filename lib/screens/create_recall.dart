@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:recall/utils/helper_methods.dart';
 import 'package:recall/values/custom_app_theme.dart';
 import 'package:recall/widgets/header.dart';
 import 'package:recall/widgets/revision_gaps.dart';
@@ -47,7 +48,8 @@ class _CreateRecallState extends State<CreateRecall> {
         // _time = _hour + ' : ' + _minute;
         // _timeController.text = _time;
         selectedTimeString = formatDate(
-            DateTime(2021, 08, 1, selectedTime.hour, selectedTime.minute),
+            DateTime(DateTime.now().year, DateTime.now().month,
+                DateTime.now().day, selectedTime.hour, selectedTime.minute),
             [hh, ':', nn, " ", am]).toString();
       });
     }
@@ -64,7 +66,7 @@ class _CreateRecallState extends State<CreateRecall> {
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
           child: Container(
-            height: _height,
+            // height: _height,
             width: _width,
             child: Column(
               children: [
@@ -103,6 +105,10 @@ class _CreateRecallState extends State<CreateRecall> {
                         height: 20,
                       ),
                       _fileLinks(),
+                      SizedBox(
+                        height: 50,
+                      ),
+                      _submitBtn(),
                     ],
                   ),
                 ),
@@ -111,6 +117,63 @@ class _CreateRecallState extends State<CreateRecall> {
           ),
         ),
       ),
+    );
+  }
+
+  showError({str}) {}
+
+  bool _isFormCorrect() {
+    if (_value == 1) {
+      final regex = RegExp(r'^\d+\-(\d+\-)+\d+$');
+      if (!regex.hasMatch(sessionValue)) {
+        showError(str: 'session string is not correct');
+        return false;
+      }
+    } else if (!_daysSelected.contains(true)) {
+      showError(str: "no days selected for habit track");
+      return false;
+    }
+
+    if (selectedTimeString == 'Select a Time') {
+      showError(str: "no time selected");
+      return false;
+    }
+  }
+
+  _saveForm() {
+    // create recall object
+    // save the object in preferences
+  }
+
+  Widget _submitBtn() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        GestureDetector(
+          onTap: () {
+            if (_isFormCorrect()) {
+              _saveForm();
+            }
+          },
+          child: Container(
+            height: 40,
+            width: 100,
+            decoration: BoxDecoration(
+              color: CustomAppTheme.primaryColor.withOpacity(0.6),
+              borderRadius: BorderRadius.circular(5),
+            ),
+            child: Center(
+              child: Text(
+                "Submit",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 17,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -242,6 +305,12 @@ class _CreateRecallState extends State<CreateRecall> {
   }
 
   Widget _fileLinks() {
+    List<Widget> files = [];
+    files.add(_addFileBtn());
+
+    filePaths.forEach((path) {
+      files.add(_fileTile(path: path));
+    });
     return Container(
       width: _width,
       child: Column(
@@ -249,42 +318,70 @@ class _CreateRecallState extends State<CreateRecall> {
         children: [
           fieldTitle("Files"),
           Container(
-            // width: _width / 2,
-            // height: 30,
             margin: EdgeInsets.only(
               top: 10,
             ),
-            // color: Colors.lightBlue,
-            child: GestureDetector(
-              onTap: () async {
-                FilePickerResult result =
-                    await FilePicker.platform.pickFiles(allowMultiple: false);
-                if (result != null) {
-                  PlatformFile file = result.files.first;
-                  filePaths.add(file.path);
-                }
-
-                // else {
-                //   print("file path stored is $filePath");
-                //   OpenFile.open(filePath);
-                // }
-              },
-              child: Container(
-                height: 80,
-                width: 80,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  color: CustomAppTheme.primaryColor.withOpacity(0.3),
-                ),
-                child: Icon(
-                  Icons.add,
-                  size: 35,
-                  color: Colors.white,
-                ),
-              ),
+            child: Wrap(
+              children: files,
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _fileTile({path}) {
+    return Container(
+      margin: EdgeInsets.only(
+        left: 10,
+      ),
+      child: GestureDetector(
+        onTap: () async {
+          OpenFile.open(path);
+        },
+        child: Container(
+          height: 80,
+          width: 80,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            color: CustomAppTheme.primaryColor.withOpacity(0.3),
+          ),
+          child: Center(
+            child: Text(HelperMethods.getType(path)),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _addFileBtn() {
+    return GestureDetector(
+      onTap: () async {
+        FilePickerResult result =
+            await FilePicker.platform.pickFiles(allowMultiple: false);
+        if (result != null) {
+          PlatformFile file = result.files.first;
+          filePaths.add(file.path);
+          setState(() {});
+        }
+
+        // else {
+        //   print("file path stored is $filePath");
+        //   OpenFile.open(filePath);
+        // }
+      },
+      child: Container(
+        height: 80,
+        width: 80,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+          color: CustomAppTheme.primaryColor.withOpacity(0.3),
+        ),
+        child: Icon(
+          Icons.add,
+          size: 35,
+          color: Colors.white,
+        ),
       ),
     );
   }

@@ -31,6 +31,7 @@ dependencies:
   date_format: ^1.0.9
   file_picker: ^2.1.6
   open_file: ^3.0.3
+  shared_preferences: ^0.5.3+1
 
 
 
