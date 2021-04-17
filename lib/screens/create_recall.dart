@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:recall/models/recall_model.dart';
 import 'package:recall/utils/helper_methods.dart';
 import 'package:recall/values/custom_app_theme.dart';
 import 'package:recall/widgets/header.dart';
@@ -32,8 +33,11 @@ class _CreateRecallState extends State<CreateRecall> {
   ValueNotifier<int> _sessionType = ValueNotifier<int>(1);
   String sessionValue = '';
   TimeOfDay selectedTime = TimeOfDay(hour: 00, minute: 00);
-  String selectedTimeString = 'Select a Time', descriptionText = '';
+  String selectedTimeString = 'Select a Time',
+      descriptionText = '',
+      titleText = '';
   List<String> filePaths = [];
+  DateTime selectedDateTime;
 
   Future<Null> _selectTime(BuildContext context) async {
     final TimeOfDay picked = await showTimePicker(
@@ -47,10 +51,10 @@ class _CreateRecallState extends State<CreateRecall> {
         // _minute = selectedTime.minute.toString();
         // _time = _hour + ' : ' + _minute;
         // _timeController.text = _time;
-        selectedTimeString = formatDate(
-            DateTime(DateTime.now().year, DateTime.now().month,
-                DateTime.now().day, selectedTime.hour, selectedTime.minute),
-            [hh, ':', nn, " ", am]).toString();
+        selectedDateTime = DateTime(DateTime.now().year, DateTime.now().month,
+            DateTime.now().day, selectedTime.hour, selectedTime.minute);
+        selectedTimeString =
+            formatDate(selectedDateTime, [hh, ':', nn, " ", am]).toString();
       });
     }
   }
@@ -88,15 +92,27 @@ class _CreateRecallState extends State<CreateRecall> {
                   ),
                   child: Column(
                     children: [
-                      _typeSelection(),
+                      Container(
+                        width: _width,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _titleInput(),
+                            _typeSelection(),
+                          ],
+                        ),
+                      ),
                       SizedBox(
                         height: 20,
                       ),
-                      _sessionSelection(),
-                      SizedBox(
-                        height: 20,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _sessionSelection(),
+                          _timeSelection(),
+                        ],
                       ),
-                      _timeSelection(),
                       SizedBox(
                         height: 20,
                       ),
@@ -120,6 +136,29 @@ class _CreateRecallState extends State<CreateRecall> {
     );
   }
 
+  _titleInput() {
+    return Container(
+      width: _width * 0.4,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          fieldTitle("Title"),
+          Container(
+            width: _width * 0.4,
+            child: TextFormField(
+              initialValue: titleText,
+              decoration: InputDecoration(hintText: "Enter a title"),
+              onChanged: (text) {
+                titleText = text;
+              },
+              maxLines: 1,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   showError({str}) {}
 
   bool _isFormCorrect() {
@@ -138,11 +177,35 @@ class _CreateRecallState extends State<CreateRecall> {
       showError(str: "no time selected");
       return false;
     }
+
+    if (titleText.isEmpty) {
+      showError(str: "no title entered");
+      return false;
+    }
   }
 
   _saveForm() {
     // create recall object
+    RecallModel obj = RecallModel(
+        title: titleText,
+        description: descriptionText,
+        totalSteps: _value == 1 ? sessionValue.split('-') : -1,
+        completedSteps: 0,
+        sessions: _getSessions(),
+        notificationTime: selectedDateTime,
+        files: filePaths);
+
     // save the object in preferences
+  }
+
+  List<DateTime> _getSessions() {
+    DateTime present = DateTime.now();
+    List<DateTime> res = [];
+    sessionValue.split('-').forEach((session) {
+      res.add(present.add(Duration(days: int.parse(session))));
+    });
+
+    return res;
   }
 
   Widget _submitBtn() {
@@ -192,6 +255,7 @@ class _CreateRecallState extends State<CreateRecall> {
 
   Widget _typeSelection() {
     return Container(
+      width: _width * 0.4,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -212,7 +276,7 @@ class _CreateRecallState extends State<CreateRecall> {
 
   Widget _sessionSelection() {
     return Container(
-      width: _width,
+      width: _width * 0.4,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -246,7 +310,7 @@ class _CreateRecallState extends State<CreateRecall> {
 
   Widget _timeSelection() {
     return Container(
-      width: _width,
+      width: _width * 0.4,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

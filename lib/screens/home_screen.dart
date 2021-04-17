@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:recall/screens/create_recall.dart';
 import 'package:recall/screens/recall_list.dart';
+import 'package:recall/screens/splash_screen.dart';
 import 'package:recall/values/app_constants.dart';
 import 'package:recall/values/custom_app_theme.dart';
 import 'package:recall/widgets/custom_tabs.dart';
