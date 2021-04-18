@@ -7,6 +7,7 @@ class RecallModel {
   List<DateTime> sessions = [];
   DateTime notificationTime;
   List<dynamic> files;
+  List<bool> days;
 
   RecallModel(
       {this.title,
@@ -16,7 +17,8 @@ class RecallModel {
       this.completedSteps,
       this.sessions,
       this.notificationTime,
-      this.files});
+      this.files,
+      this.days});
 
   factory RecallModel.fromJson(Map<String, dynamic> json) {
     return RecallModel(
@@ -27,13 +29,28 @@ class RecallModel {
         completedSteps: json['completedSteps'],
         sessions: RecallModel.getSessions(jsonDecode(json['sessions'])),
         notificationTime: DateTime.parse(json['notificationTime']),
+        days: RecallModel.getDays(jsonDecode(json['days'])),
         files: json['files'].map((e) => e.toString()).toList());
+  }
+
+  static List<bool> getDays(list) {
+    print("list for parsing $list");
+    List<bool> res = [];
+    list.forEach((item) {
+      if (item.toString().toLowerCase() == 'true') {
+        res.add(true);
+      } else {
+        res.add(false);
+      }
+    });
+    print("final result $res");
+    return res;
   }
 
   static getSessions(list) {
     List<DateTime> res = [];
     list.forEach((dt) {
-      res.add(DateTime(dt));
+      res.add(DateTime.parse(dt));
     });
     // dev.debugger();
     return res;
@@ -47,6 +64,7 @@ class RecallModel {
         'completedSteps': completedSteps,
         'sessions': jsonEncode(sessions.map((e) => e.toString()).toList()),
         'notificationTime': notificationTime.toString(),
+        'days': jsonEncode(days),
         'files': files
       };
 }

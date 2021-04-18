@@ -23,6 +23,42 @@ class _RecallDetailsState extends State<RecallDetails> {
   double _height, _width;
   RecallModel item;
 
+  String _getUpcomingSession() {
+    DateTime upcomingDate;
+    if (widget.type == RecallType.REVISION) {
+      upcomingDate = widget.recall.sessions[widget.recall.completedSteps];
+    } else {
+      int curDay = DateTime.now().weekday - 1;
+      int nextDay = -1;
+      for (int i = curDay + 1; i < 7; i++) {
+        if (widget.recall.days[i]) {
+          nextDay = i;
+          break;
+        }
+      }
+
+      if (nextDay == -1) {
+        for (int i = 0; i < 7; i++) {
+          if (widget.recall.days[i]) {
+            nextDay = i;
+            break;
+          }
+        }
+      }
+
+      upcomingDate = DateTime.now().add(Duration(days: nextDay - curDay));
+    }
+
+    upcomingDate = DateTime(
+        upcomingDate.year,
+        upcomingDate.month,
+        upcomingDate.day,
+        widget.recall.notificationTime.hour,
+        widget.recall.notificationTime.minute);
+
+    return DateFormat("dd MMM yyyy hh:MM a").format(upcomingDate).toString();
+  }
+
   @override
   Widget build(BuildContext context) {
     _height = MediaQuery.of(context).size.height -
@@ -107,7 +143,7 @@ class _RecallDetailsState extends State<RecallDetails> {
                                   //     .format(
                                   //         item.sessions[item.completedSteps])
                                   //     .toString(),
-                                  "random",
+                                  _getUpcomingSession(),
                                   style: TextStyle(
                                     fontSize: 20,
                                     color: Colors.grey,
@@ -213,7 +249,7 @@ class _RecallDetailsState extends State<RecallDetails> {
                   ),
                 ),
                 RecallFiles(
-                  files: item.files,
+                  files: item.files.map((e) => e.toString()).toList(),
                 ),
               ],
             ),

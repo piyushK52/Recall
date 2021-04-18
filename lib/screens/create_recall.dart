@@ -201,6 +201,7 @@ class _CreateRecallState extends State<CreateRecall> {
         totalSteps: _value == 1 ? sessionValue.split('-').length : -1,
         completedSteps: 0,
         sessions: _getSessions(),
+        days: _daysSelected,
         notificationTime: selectedDateTime,
         files: filePaths);
 
@@ -219,9 +220,11 @@ class _CreateRecallState extends State<CreateRecall> {
   List<DateTime> _getSessions() {
     DateTime present = DateTime.now();
     List<DateTime> res = [];
+    int cur = 0;
     if (_value == 1) {
       sessionValue.split('-').forEach((session) {
-        res.add(present.add(Duration(days: int.parse(session))));
+        cur += int.parse(session);
+        res.add(present.add(Duration(days: cur)));
       });
     }
 
