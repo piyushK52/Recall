@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:recall/models/recall_model.dart';
+import 'package:recall/values/app_constants.dart';
 import 'package:recall/values/custom_app_theme.dart';
 import 'package:recall/widgets/header.dart';
 import 'package:intl/intl.dart';
+import 'package:recall/widgets/weekday_selector.dart';
 
 class SessionList extends StatelessWidget {
   static const routeName = './main-screen/recall-details/session-list';
@@ -10,10 +13,10 @@ class SessionList extends StatelessWidget {
   final activeColor = CustomAppTheme.primaryColor;
   final deactiveColor = Colors.grey;
 
-  List<DateTime> sessions = [];
-  int completed;
+  RecallModel item;
+  RecallType type;
 
-  SessionList({this.sessions, this.completed});
+  SessionList({this.item, this.type});
 
   @override
   Widget build(BuildContext context) {
@@ -22,13 +25,14 @@ class SessionList extends StatelessWidget {
         MediaQuery.of(context).padding.bottom;
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Colors.white,
         body: Container(
           height: _height,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Header(
-                headerText: 'Some random text which is very long',
+                headerText: item.title + ' - timeline',
                 onPop: () {
                   Navigator.of(context).pop("random");
                 },
@@ -36,14 +40,27 @@ class SessionList extends StatelessWidget {
               SizedBox(
                 height: 20,
               ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: sessions.length,
-                  itemBuilder: (ctx, index) {
-                    return _sessionItem(index);
-                  },
-                ),
-              ),
+              type == RecallType.REVISION
+                  ? Expanded(
+                      child: ListView.builder(
+                      itemCount: item.sessions.length,
+                      itemBuilder: (ctx, index) {
+                        return _sessionItem(index);
+                      },
+                    ))
+                  : Center(
+                      child: Container(
+                        height: 50,
+                        margin: EdgeInsets.only(
+                          left: 20,
+                        ),
+                        child: WeekDaySelector(
+                          onChanged: (int day) {},
+                          selectedDays: item.days,
+                          context: context,
+                        ),
+                      ),
+                    ),
             ],
           ),
         ),
@@ -71,7 +88,9 @@ class SessionList extends StatelessWidget {
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(cirleDia / 2),
-                    color: index + 1 > completed ? deactiveColor : activeColor,
+                    color: index + 1 > item.completedSteps
+                        ? deactiveColor
+                        : activeColor,
                   ),
                   child: Text(
                     (index + 1).toString(),
@@ -81,17 +100,17 @@ class SessionList extends StatelessWidget {
                     ),
                   ),
                 ),
-                index != sessions.length - 1
+                index != item.sessions.length - 1
                     ? Container(
                         height: 60,
                         width: 10,
                         margin: EdgeInsets.only(
-                          top: 30,
+                          top: 40,
                           left: 20,
                           bottom: 3,
                         ),
                         decoration: BoxDecoration(
-                          color: index + 1 > completed
+                          color: index + 1 > item.completedSteps
                               ? deactiveColor
                               : activeColor,
                         ),
@@ -106,8 +125,8 @@ class SessionList extends StatelessWidget {
               left: 20,
             ),
             child: Text(
-              DateFormat('dd MMM yyyy   hh:mm a').format(sessions[index]) +
-                  '  ( 2 Days )',
+              DateFormat('dd MMM yyyy   hh:mm a').format(item.sessions[index]) +
+                  (index != 0 ? '  ( ${getPendingDays(index)} Days )' : ''),
               style: TextStyle(
                 fontSize: 15,
               ),
@@ -116,5 +135,11 @@ class SessionList extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String getPendingDays(int idx) {
+    if (idx == 0) return idx.toString();
+    return (item.sessions[idx].difference(item.sessions[idx - 1]).inDays)
+        .toString();
   }
 }

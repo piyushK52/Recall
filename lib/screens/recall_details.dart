@@ -109,8 +109,8 @@ class _RecallDetailsState extends State<RecallDetails> {
                       Navigator.of(context)
                           .push(MaterialPageRoute(builder: (context) {
                         return SessionList(
-                          sessions: item.sessions,
-                          completed: item.completedSteps,
+                          type: widget.type,
+                          item: item,
                         );
                       }));
                     },
@@ -230,6 +230,7 @@ class _RecallDetailsState extends State<RecallDetails> {
                 Container(
                   margin: EdgeInsets.only(
                     right: 20,
+                    bottom: 10,
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
