@@ -202,6 +202,7 @@ class _CreateRecallState extends State<CreateRecall> {
         completedSteps: 0,
         sessions: _getSessions(),
         days: _daysSelected,
+        active: true,
         notificationTime: selectedDateTime,
         files: filePaths);
 

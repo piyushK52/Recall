@@ -8,6 +8,7 @@ class RecallModel {
   DateTime notificationTime;
   List<dynamic> files;
   List<bool> days;
+  bool active;
 
   RecallModel(
       {this.title,
@@ -18,7 +19,8 @@ class RecallModel {
       this.sessions,
       this.notificationTime,
       this.files,
-      this.days});
+      this.days,
+      this.active});
 
   factory RecallModel.fromJson(Map<String, dynamic> json) {
     return RecallModel(
@@ -30,6 +32,8 @@ class RecallModel {
         sessions: RecallModel.getSessions(jsonDecode(json['sessions'])),
         notificationTime: DateTime.parse(json['notificationTime']),
         days: RecallModel.getDays(jsonDecode(json['days'])),
+        active:
+            json['active'].toString().toLowerCase() == 'true' ? true : false,
         files: json['files'].map((e) => e.toString()).toList());
   }
 
@@ -65,6 +69,7 @@ class RecallModel {
         'sessions': jsonEncode(sessions.map((e) => e.toString()).toList()),
         'notificationTime': notificationTime.toString(),
         'days': jsonEncode(days),
-        'files': files
+        'files': files,
+        'active': active
       };
 }

@@ -8,23 +8,28 @@ class ActionPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      height: 25,
-      padding: EdgeInsets.only(
-        left: 8,
-        right: 8,
-      ),
-      decoration: BoxDecoration(
-        color: CustomAppTheme.primaryColor.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          color: CustomAppTheme.darkPrimaryColor,
+    return GestureDetector(
+      onTap: () {
+        action();
+      },
+      child: Container(
+        alignment: Alignment.center,
+        height: 25,
+        padding: EdgeInsets.only(
+          left: 8,
+          right: 8,
+        ),
+        decoration: BoxDecoration(
+          color: CustomAppTheme.primaryColor.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: CustomAppTheme.darkPrimaryColor,
+          ),
         ),
       ),
     );

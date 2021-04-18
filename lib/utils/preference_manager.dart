@@ -43,6 +43,24 @@ class PreferenceManager {
     return res;
   }
 
+  updateRecall(RecallType type, RecallModel recall) async {
+    _sharedPreferences = await SharedPreferences.getInstance();
+    var list = _sharedPreferences
+        .getString(type == RecallType.REVISION ? 'revision' : 'habit');
+    if (list == null) {
+      list = '[]';
+    }
+    List<RecallModel> res = [];
+    jsonDecode(list).forEach((item) {
+      res.add(RecallModel.fromJson(item));
+    });
+    res.removeWhere((item) => item.uuid == recall.uuid);
+    res.add(recall);
+    return await _sharedPreferences.setString(
+        type == RecallType.REVISION ? 'revision' : 'habit',
+        jsonEncode(res.map((e) => e.toJson()).toList()));
+  }
+
   clearAllData() async {
     _sharedPreferences = await SharedPreferences.getInstance();
     return await _sharedPreferences.clear();

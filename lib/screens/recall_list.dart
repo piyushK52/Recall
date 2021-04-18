@@ -39,7 +39,11 @@ class _RecallListState extends State<RecallList> {
         onTap: () {
           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
             return RecallDetails(type: widget.type, recall: item);
-          }));
+          })).then((val) {
+            if (val != null) {
+              setState(() {});
+            }
+          });
         },
         highlightColor: Colors.transparent,
         child: Container(
@@ -53,7 +57,9 @@ class _RecallListState extends State<RecallList> {
             bottom: 10,
           ),
           decoration: BoxDecoration(
-            color: CustomAppTheme.primaryColor.withOpacity(0.2),
+            color: item.active
+                ? CustomAppTheme.primaryColor.withOpacity(0.2)
+                : Colors.grey.withOpacity(0.2),
             borderRadius: BorderRadius.circular(
               15,
             ),
@@ -74,7 +80,10 @@ class _RecallListState extends State<RecallList> {
                   // color: Colors.lightBlue,
                   child: Text(
                     item.title,
-                    style: CustomAppTheme.heading2,
+                    style: CustomAppTheme.heading2.copyWith(
+                        color: item.active
+                            ? CustomAppTheme.primaryColor
+                            : Colors.grey),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -89,7 +98,9 @@ class _RecallListState extends State<RecallList> {
                   ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10.0),
-                    color: CustomAppTheme.primaryColor.withOpacity(0.9),
+                    color: item.active
+                        ? CustomAppTheme.primaryColor.withOpacity(0.9)
+                        : Colors.grey.withOpacity(0.9),
                   ),
                   child: Column(
                     children: [
@@ -132,7 +143,9 @@ class _RecallListState extends State<RecallList> {
                       Container(
                         padding: EdgeInsets.all(8.0),
                         decoration: BoxDecoration(
-                          color: CustomAppTheme.primaryColor.withOpacity(0.5),
+                          color: item.active
+                              ? CustomAppTheme.primaryColor.withOpacity(0.5)
+                              : Colors.grey.withOpacity(0.5),
                           borderRadius: BorderRadius.circular(15.0),
                         ),
                         child: Icon(
