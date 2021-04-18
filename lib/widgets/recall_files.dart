@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
+import 'package:recall/utils/helper_methods.dart';
 import 'package:recall/values/custom_app_theme.dart';
 
 class RecallFiles extends StatefulWidget {
   static const routeName = './main-screen/recall-details/recall-list';
   List<String> files = [];
+  Function delete;
 
-  RecallFiles({this.files});
+  RecallFiles({this.files, this.delete});
   @override
   _RecallFilesState createState() => _RecallFilesState();
 }
@@ -79,14 +81,31 @@ class _RecallFilesState extends State<RecallFiles> {
             ),
           ),
           Spacer(),
-          Container(
-            child: Icon(
-              Icons.delete,
-              color: CustomAppTheme.primaryColor.withOpacity(0.8),
+          GestureDetector(
+            onTap: () {
+              print("deleting the file");
+              HelperMethods.showAlertDialog(
+                  context: context,
+                  str1: 'Cancel',
+                  fun1: popPage,
+                  str2: 'Continue',
+                  fun2: () => widget.delete(i),
+                  title: "Delete File",
+                  desc: "Are you sure you want delete this file?");
+            },
+            child: Row(
+              children: [
+                Container(
+                  child: Icon(
+                    Icons.delete,
+                    color: CustomAppTheme.primaryColor.withOpacity(0.8),
+                  ),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+              ],
             ),
-          ),
-          SizedBox(
-            width: 10,
           ),
           // Container(
           //   child: Icon(
@@ -100,5 +119,9 @@ class _RecallFilesState extends State<RecallFiles> {
         ],
       ),
     );
+  }
+
+  popPage() {
+    Navigator.of(context).pop();
   }
 }

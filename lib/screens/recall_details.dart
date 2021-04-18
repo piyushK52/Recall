@@ -100,11 +100,7 @@ class _RecallDetailsState extends State<RecallDetails> {
         widget.recall.active = true;
       }
     }
-    bool res =
-        await PreferenceManager().updateRecall(widget.type, widget.recall);
-    if (res) {
-      setState(() {});
-    }
+    _updateRecall();
   }
 
   _addFiles() async {
@@ -114,11 +110,21 @@ class _RecallDetailsState extends State<RecallDetails> {
       PlatformFile file = result.files.first;
       widget.recall.files.add(file.path);
 
-      bool res =
-          await PreferenceManager().updateRecall(widget.type, widget.recall);
-      if (res) {
-        setState(() {});
-      }
+      _updateRecall();
+    }
+  }
+
+  deleteFile(int i) {
+    widget.recall.files.removeAt(i);
+    Navigator.of(context).pop();
+    _updateRecall();
+  }
+
+  _updateRecall() async {
+    bool res =
+        await PreferenceManager().updateRecall(widget.type, widget.recall);
+    if (res) {
+      setState(() {});
     }
   }
 
@@ -318,8 +324,8 @@ class _RecallDetailsState extends State<RecallDetails> {
                     ),
                   ),
                   RecallFiles(
-                    files: item.files.map((e) => e.toString()).toList(),
-                  ),
+                      files: item.files.map((e) => e.toString()).toList(),
+                      delete: deleteFile),
                 ],
               ),
             ),

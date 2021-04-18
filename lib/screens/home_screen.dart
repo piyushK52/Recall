@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:recall/screens/create_recall.dart';
 import 'package:recall/screens/recall_list.dart';
 import 'package:recall/screens/splash_screen.dart';
+import 'package:recall/utils/helper_methods.dart';
 import 'package:recall/utils/preference_manager.dart';
 import 'package:recall/values/app_constants.dart';
 import 'package:recall/values/current_data.dart';
@@ -72,7 +73,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        showAlertDialog(context);
+                        HelperMethods.showAlertDialog(
+                            context: context,
+                            str1: 'Cancel',
+                            fun1: popPage,
+                            str2: 'Continue',
+                            fun2: clearAll,
+                            title: "Clear All Data",
+                            desc: "Are you sure you want to clear all data?");
                       },
                       child: Container(
                         padding: EdgeInsets.all(5),
@@ -169,44 +177,18 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  showAlertDialog(BuildContext context) {
-    // set up the buttons
-    Widget cancelButton = FlatButton(
-      child: Text("Cancel"),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    );
-    Widget continueButton = FlatButton(
-      child: Text("Continue"),
-      onPressed: () async {
-        bool res = await PreferenceManager().clearAllData();
-        print('result -> $res');
-        if (res) {
-          CurrentData.habitList = [];
-          CurrentData.revisionList = [];
-          Navigator.pop(context);
-          setState(() {});
-        }
-      },
-    );
+  popPage() {
+    Navigator.of(context).pop();
+  }
 
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: Text("Clear All Data"),
-      content: Text("Are you sure you want to clear all data?"),
-      actions: [
-        cancelButton,
-        continueButton,
-      ],
-    );
-
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
+  clearAll() async {
+    bool res = await PreferenceManager().clearAllData();
+    print('result -> $res');
+    if (res) {
+      CurrentData.habitList = [];
+      CurrentData.revisionList = [];
+      Navigator.pop(context);
+      setState(() {});
+    }
   }
 }
