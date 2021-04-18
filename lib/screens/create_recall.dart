@@ -43,6 +43,8 @@ class _CreateRecallState extends State<CreateRecall> {
   DateTime selectedDateTime;
 
   Future<Null> _selectTime(BuildContext context) async {
+    FocusScope.of(context).requestFocus(new FocusNode());
+
     final TimeOfDay picked = await showTimePicker(
       context: context,
       initialTime: selectedTime,
@@ -205,7 +207,7 @@ class _CreateRecallState extends State<CreateRecall> {
       HelperMethods.showSnackBar(
           key: scaffoldKey, str: 'Recall created successfully');
       Future.delayed(Duration(milliseconds: 300), () {
-        Navigator.pop(context);
+        Navigator.of(context).pop('reload');
       });
     }
   }
@@ -277,6 +279,9 @@ class _CreateRecallState extends State<CreateRecall> {
           DropdownButton(
               value: _value,
               items: _recallTypeList,
+              onTap: () {
+                FocusScope.of(context).requestFocus(new FocusNode());
+              },
               onChanged: (value) {
                 setState(() {
                   _value = value;
@@ -307,6 +312,7 @@ class _CreateRecallState extends State<CreateRecall> {
                         });
                       },
                       selectedDays: _daysSelected,
+                      context: context,
                     )
                   : RevisionGap(
                       initialValue: sessionValue,
@@ -433,6 +439,8 @@ class _CreateRecallState extends State<CreateRecall> {
   Widget _addFileBtn() {
     return GestureDetector(
       onTap: () async {
+        FocusScope.of(context).requestFocus(new FocusNode());
+
         FilePickerResult result =
             await FilePicker.platform.pickFiles(allowMultiple: false);
         if (result != null) {

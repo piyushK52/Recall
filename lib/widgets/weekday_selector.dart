@@ -4,8 +4,9 @@ import 'package:recall/values/custom_app_theme.dart';
 class WeekDaySelector extends StatefulWidget {
   List<bool> selectedDays;
   Function onChanged;
+  BuildContext context;
 
-  WeekDaySelector({this.selectedDays, this.onChanged});
+  WeekDaySelector({this.selectedDays, this.onChanged, this.context});
 
   @override
   _WeekDaySelectorState createState() => _WeekDaySelectorState();
@@ -36,6 +37,8 @@ class _WeekDaySelectorState extends State<WeekDaySelector> {
   Widget _daySelector(idx) {
     return GestureDetector(
       onTap: () {
+        FocusScope.of(widget.context).requestFocus(new FocusNode());
+
         widget.onChanged(idx);
       },
       child: Container(

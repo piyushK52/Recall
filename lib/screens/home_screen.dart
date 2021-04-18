@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:recall/screens/create_recall.dart';
 import 'package:recall/screens/recall_list.dart';
 import 'package:recall/screens/splash_screen.dart';
+import 'package:recall/utils/preference_manager.dart';
 import 'package:recall/values/app_constants.dart';
+import 'package:recall/values/current_data.dart';
 import 'package:recall/values/custom_app_theme.dart';
 import 'package:recall/widgets/custom_tabs.dart';
 
@@ -34,7 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.pushNamed(context, CreateRecall.routeName)
                   .then((value) {
                 if (value == 'reload') {
-                  rebuildNotifier.value += 1;
+                  // rebuildNotifier.value += 1;
+                  setState(() {});
                 }
               });
             },
@@ -52,17 +55,41 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             child: Column(
               children: [
-                Container(
-                  height: 50,
-                  alignment: Alignment.centerLeft,
-                  padding: EdgeInsets.only(
-                    left: 15,
-                    bottom: 10,
-                  ),
-                  child: Text(
-                    "Recall",
-                    style: CustomAppTheme.heading1,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      height: 50,
+                      alignment: Alignment.centerLeft,
+                      padding: EdgeInsets.only(
+                        left: 15,
+                        bottom: 10,
+                      ),
+                      child: Text(
+                        "Recall",
+                        style: CustomAppTheme.heading1,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        showAlertDialog(context);
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: CustomAppTheme.primaryColor.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                        child: Text(
+                          "Clear All Data",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 Expanded(
                   child: DefaultTabController(
@@ -139,6 +166,47 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  showAlertDialog(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = FlatButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+    Widget continueButton = FlatButton(
+      child: Text("Continue"),
+      onPressed: () async {
+        bool res = await PreferenceManager().clearAllData();
+        print('result -> $res');
+        if (res) {
+          CurrentData.habitList = [];
+          CurrentData.revisionList = [];
+          Navigator.pop(context);
+          setState(() {});
+        }
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Clear All Data"),
+      content: Text("Are you sure you want to clear all data?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }

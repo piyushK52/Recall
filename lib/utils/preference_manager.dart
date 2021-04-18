@@ -42,4 +42,9 @@ class PreferenceManager {
     });
     return res;
   }
+
+  clearAllData() async {
+    _sharedPreferences = await SharedPreferences.getInstance();
+    return await _sharedPreferences.clear();
+  }
 }
