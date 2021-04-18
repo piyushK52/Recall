@@ -10,6 +10,7 @@ import 'package:recall/widgets/weekday_selector.dart';
 import 'package:date_format/date_format.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:open_file/open_file.dart';
+import 'package:uuid/uuid.dart';
 
 class CreateRecall extends StatefulWidget {
   static const routeName = '/home-screen/create-recall';
@@ -190,8 +191,11 @@ class _CreateRecallState extends State<CreateRecall> {
   }
 
   _saveForm() async {
+    var uuid = Uuid();
+
     // create recall object
     RecallModel obj = RecallModel(
+        uuid: uuid.v1(),
         title: titleText,
         description: descriptionText,
         totalSteps: _value == 1 ? sessionValue.split('-').length : -1,

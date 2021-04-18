@@ -32,6 +32,7 @@ dependencies:
   file_picker: ^2.1.6
   open_file: ^3.0.3
   shared_preferences: ^0.5.3+1
+  uuid: ^2.0.3
 
 
 
