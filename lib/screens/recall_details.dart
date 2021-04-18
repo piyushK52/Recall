@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:recall/models/recall_model.dart';
 import 'package:recall/screens/session_list.dart';
 import 'package:recall/values/app_constants.dart';
 import 'package:recall/values/custom_app_theme.dart';
@@ -9,8 +11,9 @@ import 'package:recall/widgets/recall_files.dart';
 class RecallDetails extends StatefulWidget {
   static const routeName = './home-screen/recall-details';
   RecallType type;
+  RecallModel recall;
 
-  RecallDetails({this.type});
+  RecallDetails({this.type, this.recall});
 
   @override
   _RecallDetailsState createState() => _RecallDetailsState();
@@ -18,6 +21,7 @@ class RecallDetails extends StatefulWidget {
 
 class _RecallDetailsState extends State<RecallDetails> {
   double _height, _width;
+  RecallModel item;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +29,7 @@ class _RecallDetailsState extends State<RecallDetails> {
         MediaQuery.of(context).padding.top -
         MediaQuery.of(context).padding.bottom;
     _width = MediaQuery.of(context).size.width;
+    item = widget.recall;
     print(widget.type == RecallType.HABIT ? 'habit' : 'revision');
 
     return AnnotatedRegion(
@@ -38,13 +43,18 @@ class _RecallDetailsState extends State<RecallDetails> {
             child: Column(
               children: [
                 Header(
-                  headerText: 'Some random text which is very long',
+                  headerText: item.title,
                   onPop: () {
                     Navigator.of(context).pop("random");
                   },
-                  actionPill: ActionPill(
-                    text: "Mark Complete",
-                    action: () {},
+                  actionPill: Container(
+                    margin: EdgeInsets.only(
+                      right: 20,
+                    ),
+                    child: ActionPill(
+                      text: "Mark Complete",
+                      action: () {},
+                    ),
                   ),
                 ),
                 Material(
@@ -54,8 +64,8 @@ class _RecallDetailsState extends State<RecallDetails> {
                       Navigator.of(context)
                           .push(MaterialPageRoute(builder: (context) {
                         return SessionList(
-                          sessions: [DateTime.now(), DateTime.now()],
-                          completed: 1,
+                          sessions: item.sessions,
+                          completed: item.completedSteps,
                         );
                       }));
                     },
@@ -93,7 +103,11 @@ class _RecallDetailsState extends State<RecallDetails> {
                                   top: 10,
                                 ),
                                 child: Text(
-                                  "28 July 2020 at 3:00 PM",
+                                  // DateFormat('dd MMM yyyy at HH:MM a')
+                                  //     .format(
+                                  //         item.sessions[item.completedSteps])
+                                  //     .toString(),
+                                  "random",
                                   style: TextStyle(
                                     fontSize: 20,
                                     color: Colors.grey,
@@ -154,7 +168,7 @@ class _RecallDetailsState extends State<RecallDetails> {
                               top: 10,
                             ),
                             child: Text(
-                              "Some random event text which should be of maximum 50 characters or something like that, will try to keep this short",
+                              item.description,
                               style: TextStyle(
                                 fontSize: 20,
                                 color: Colors.grey,
@@ -199,11 +213,7 @@ class _RecallDetailsState extends State<RecallDetails> {
                   ),
                 ),
                 RecallFiles(
-                  files: [
-                    'a',
-                    'b',
-                    'c',
-                  ],
+                  files: item.files,
                 ),
               ],
             ),

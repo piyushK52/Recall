@@ -38,7 +38,7 @@ class _RecallListState extends State<RecallList> {
       child: InkWell(
         onTap: () {
           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-            return RecallDetails(type: widget.type);
+            return RecallDetails(type: widget.type, recall: item);
           }));
         },
         highlightColor: Colors.transparent,

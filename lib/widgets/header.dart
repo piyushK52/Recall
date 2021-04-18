@@ -3,7 +3,7 @@ import 'package:recall/values/custom_app_theme.dart';
 import 'package:recall/widgets/pill.dart';
 
 class Header extends StatelessWidget {
-  ActionPill actionPill;
+  Widget actionPill;
   Function onPop;
   String headerText;
 
@@ -17,6 +17,7 @@ class Header extends StatelessWidget {
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Material(
             color: Colors.transparent,
@@ -51,7 +52,6 @@ class Header extends StatelessWidget {
           ),
           Spacer(),
           actionPill ?? Container(),
-          Spacer(),
         ],
       ),
     );

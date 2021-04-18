@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:open_file/open_file.dart';
 import 'package:recall/values/custom_app_theme.dart';
 
 class RecallFiles extends StatefulWidget {
@@ -41,30 +42,40 @@ class _RecallFilesState extends State<RecallFiles> {
       ),
       child: Row(
         children: [
-          Container(
-            height: 40,
-            width: 40,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20.0),
-              color: CustomAppTheme.primaryColor.withOpacity(0.1),
-            ),
-            child: Icon(
-              Icons.file_copy,
-              color: CustomAppTheme.primaryColor.withOpacity(0.8),
-            ),
-          ),
-          Container(
-            width: 200,
-            margin: EdgeInsets.only(
-              left: 20,
-            ),
-            child: Text(
-              "some very long file name that will go into 2 lines",
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 15,
-              ),
+          GestureDetector(
+            onTap: () {
+              print("open file item");
+              OpenFile.open(widget.files[i]);
+            },
+            child: Row(
+              children: [
+                Container(
+                  height: 40,
+                  width: 40,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.0),
+                    color: CustomAppTheme.primaryColor.withOpacity(0.1),
+                  ),
+                  child: Icon(
+                    Icons.file_copy,
+                    color: CustomAppTheme.primaryColor.withOpacity(0.8),
+                  ),
+                ),
+                Container(
+                  width: 200,
+                  margin: EdgeInsets.only(
+                    left: 20,
+                  ),
+                  child: Text(
+                    widget.files[i].split('/').last,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           Spacer(),
@@ -77,15 +88,15 @@ class _RecallFilesState extends State<RecallFiles> {
           SizedBox(
             width: 10,
           ),
-          Container(
-            child: Icon(
-              Icons.edit,
-              color: CustomAppTheme.primaryColor.withOpacity(0.8),
-            ),
-          ),
-          SizedBox(
-            width: 10,
-          ),
+          // Container(
+          //   child: Icon(
+          //     Icons.edit,
+          //     color: CustomAppTheme.primaryColor.withOpacity(0.8),
+          //   ),
+          // ),
+          // SizedBox(
+          //   width: 10,
+          // ),
         ],
       ),
     );
