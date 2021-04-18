@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:recall/models/recall_model.dart';
 import 'package:recall/screens/recall_details.dart';
 import 'package:recall/values/app_constants.dart';
+import 'package:recall/values/current_data.dart';
 import 'package:recall/values/custom_app_theme.dart';
 
 class RecallList extends StatefulWidget {
@@ -14,17 +16,23 @@ class RecallList extends StatefulWidget {
 }
 
 class _RecallListState extends State<RecallList> {
+  List<RecallModel> recallList;
+
   @override
   Widget build(BuildContext context) {
+    recallList = widget.type == RecallType.REVISION
+        ? CurrentData.revisionList
+        : CurrentData.habitList;
     return ListView.builder(
-      itemCount: 20,
-      itemBuilder: (context, _) {
-        return _buildItem();
+      itemCount: recallList.length,
+      itemBuilder: (context, index) {
+        return _buildItem(index);
       },
     );
   }
 
-  _buildItem() {
+  _buildItem(int idx) {
+    RecallModel item = recallList[idx];
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -57,6 +65,7 @@ class _RecallListState extends State<RecallList> {
             ),
             child: Row(
               children: [
+                // title
                 Container(
                   padding: EdgeInsets.only(
                     left: 20,
@@ -64,7 +73,7 @@ class _RecallListState extends State<RecallList> {
                   width: 200,
                   // color: Colors.lightBlue,
                   child: Text(
-                    "Some random text that is too long",
+                    item.title,
                     style: CustomAppTheme.heading2,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -89,7 +98,11 @@ class _RecallListState extends State<RecallList> {
                           top: 5,
                         ),
                         child: Text(
-                          widget.type == RecallType.HABIT ? "350" : "100%",
+                          widget.type == RecallType.HABIT
+                              ? item.completedSteps.toString()
+                              : (item.completedSteps / item.totalSteps)
+                                      .toString() +
+                                  '%',
                           style: TextStyle(
                             fontSize: 25,
                             fontWeight: FontWeight.bold,

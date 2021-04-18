@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class HelperMethods {
   static String getType(String path) {
     path = path != null ? path.toLowerCase() : path;
@@ -14,5 +16,16 @@ class HelperMethods {
     }
 
     return 'pdf';
+  }
+
+  static showSnackBar({key, String str}) {
+    key.currentState.showSnackBar(SnackBar(
+      content: Text(
+        str,
+        style: TextStyle(color: Colors.white),
+      ),
+      backgroundColor: Colors.black87,
+      behavior: SnackBarBehavior.floating,
+    ));
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:recall/models/recall_model.dart';
 import 'package:recall/utils/helper_methods.dart';
+import 'package:recall/utils/preference_manager.dart';
+import 'package:recall/values/app_constants.dart';
 import 'package:recall/values/custom_app_theme.dart';
 import 'package:recall/widgets/header.dart';
 import 'package:recall/widgets/revision_gaps.dart';
@@ -17,6 +19,7 @@ class CreateRecall extends StatefulWidget {
 }
 
 class _CreateRecallState extends State<CreateRecall> {
+  final scaffoldKey = GlobalKey<ScaffoldState>();
   double _height, _width;
   int _value = 1;
   List<DropdownMenuItem> _recallTypeList = [
@@ -67,6 +70,7 @@ class _CreateRecallState extends State<CreateRecall> {
     _width = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
+        key: scaffoldKey,
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
           child: Container(
@@ -105,14 +109,11 @@ class _CreateRecallState extends State<CreateRecall> {
                       SizedBox(
                         height: 20,
                       ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          _sessionSelection(),
-                          _timeSelection(),
-                        ],
+                      _sessionSelection(),
+                      SizedBox(
+                        height: 20,
                       ),
+                      _timeSelection(),
                       SizedBox(
                         height: 20,
                       ),
@@ -159,51 +160,64 @@ class _CreateRecallState extends State<CreateRecall> {
     );
   }
 
-  showError({str}) {}
-
   bool _isFormCorrect() {
     if (_value == 1) {
       final regex = RegExp(r'^\d+\-(\d+\-)+\d+$');
       if (!regex.hasMatch(sessionValue)) {
-        showError(str: 'session string is not correct');
+        HelperMethods.showSnackBar(
+            key: scaffoldKey, str: 'session string is not correct');
         return false;
       }
     } else if (!_daysSelected.contains(true)) {
-      showError(str: "no days selected for habit track");
+      HelperMethods.showSnackBar(
+          key: scaffoldKey, str: "no days selected for habit track");
       return false;
     }
 
     if (selectedTimeString == 'Select a Time') {
-      showError(str: "no time selected");
+      HelperMethods.showSnackBar(key: scaffoldKey, str: "no time selected");
       return false;
     }
 
     if (titleText.isEmpty) {
-      showError(str: "no title entered");
+      HelperMethods.showSnackBar(key: scaffoldKey, str: "no title entered");
       return false;
     }
+
+    return true;
   }
 
-  _saveForm() {
+  _saveForm() async {
     // create recall object
     RecallModel obj = RecallModel(
         title: titleText,
         description: descriptionText,
-        totalSteps: _value == 1 ? sessionValue.split('-') : -1,
+        totalSteps: _value == 1 ? sessionValue.split('-').length : -1,
         completedSteps: 0,
         sessions: _getSessions(),
         notificationTime: selectedDateTime,
         files: filePaths);
 
     // save the object in preferences
+    bool res = await PreferenceManager().saveRecall(
+        data: obj, type: _value == 1 ? RecallType.REVISION : RecallType.HABIT);
+    if (res) {
+      HelperMethods.showSnackBar(
+          key: scaffoldKey, str: 'Recall created successfully');
+      Future.delayed(Duration(milliseconds: 300), () {
+        Navigator.pop(context);
+      });
+    }
   }
 
   List<DateTime> _getSessions() {
     DateTime present = DateTime.now();
     List<DateTime> res = [];
-    sessionValue.split('-').forEach((session) {
-      res.add(present.add(Duration(days: int.parse(session))));
-    });
+    if (_value == 1) {
+      sessionValue.split('-').forEach((session) {
+        res.add(present.add(Duration(days: int.parse(session))));
+      });
+    }
 
     return res;
   }
@@ -276,7 +290,6 @@ class _CreateRecallState extends State<CreateRecall> {
 
   Widget _sessionSelection() {
     return Container(
-      width: _width * 0.4,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -310,7 +323,6 @@ class _CreateRecallState extends State<CreateRecall> {
 
   Widget _timeSelection() {
     return Container(
-      width: _width * 0.4,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

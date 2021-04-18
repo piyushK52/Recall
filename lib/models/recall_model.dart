@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as dev;
 
 class RecallModel {
   String title, description;
@@ -22,9 +23,18 @@ class RecallModel {
         description: json['description'],
         totalSteps: json['totalSteps'],
         completedSteps: json['completedSteps'],
-        sessions: json['sessions'],
-        notificationTime: json['notificationTime'],
+        sessions: RecallModel.getSessions(jsonDecode(json['sessions'])),
+        notificationTime: DateTime(json['notificationTime']),
         files: json['files']);
+  }
+
+  static getSessions(list) {
+    List<DateTime> res = [];
+    list.forEach((dt) {
+      res.add(DateTime(dt));
+    });
+    // dev.debugger();
+    return res;
   }
 
   Map<String, dynamic> toJson() => {
