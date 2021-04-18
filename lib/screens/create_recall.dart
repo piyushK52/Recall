@@ -205,6 +205,9 @@ class _CreateRecallState extends State<CreateRecall> {
         notificationTime: selectedDateTime,
         files: filePaths);
 
+    print(
+        "saving notification time ${selectedDateTime.hour} ${selectedDateTime.minute}");
+
     // save the object in preferences
     bool res = await PreferenceManager().saveRecall(
         data: obj, type: _value == 1 ? RecallType.REVISION : RecallType.HABIT);

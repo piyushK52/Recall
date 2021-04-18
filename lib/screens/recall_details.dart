@@ -29,25 +29,34 @@ class _RecallDetailsState extends State<RecallDetails> {
       upcomingDate = widget.recall.sessions[widget.recall.completedSteps];
     } else {
       int curDay = DateTime.now().weekday - 1;
-      int nextDay = -1;
+      int addDays = -1;
+      print("current days selected ${widget.recall.days}");
       for (int i = curDay + 1; i < 7; i++) {
         if (widget.recall.days[i]) {
-          nextDay = i;
+          addDays = i - curDay;
           break;
         }
       }
 
-      if (nextDay == -1) {
+      if (addDays == -1) {
         for (int i = 0; i < 7; i++) {
           if (widget.recall.days[i]) {
-            nextDay = i;
+            addDays = i;
             break;
           }
         }
+
+        addDays += (6 - curDay);
+        print("next day is $addDays");
       }
 
-      upcomingDate = DateTime.now().add(Duration(days: nextDay - curDay));
+      DateTime present = DateTime.now();
+      upcomingDate = DateTime(present.year, present.month, present.day)
+          .add(Duration(days: addDays + 1));
     }
+
+    print(
+        "notification time ${widget.recall.notificationTime} ${widget.recall.notificationTime.hour} ${widget.recall.notificationTime.minute}");
 
     upcomingDate = DateTime(
         upcomingDate.year,
@@ -56,7 +65,7 @@ class _RecallDetailsState extends State<RecallDetails> {
         widget.recall.notificationTime.hour,
         widget.recall.notificationTime.minute);
 
-    return DateFormat("dd MMM yyyy hh:MM a").format(upcomingDate).toString();
+    return DateFormat("dd MMM yyyy hh:mm a").format(upcomingDate).toString();
   }
 
   @override
