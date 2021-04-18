@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:recall/models/recall_model.dart';
@@ -103,6 +104,21 @@ class _RecallDetailsState extends State<RecallDetails> {
         await PreferenceManager().updateRecall(widget.type, widget.recall);
     if (res) {
       setState(() {});
+    }
+  }
+
+  _addFiles() async {
+    FilePickerResult result =
+        await FilePicker.platform.pickFiles(allowMultiple: false);
+    if (result != null) {
+      PlatformFile file = result.files.first;
+      widget.recall.files.add(file.path);
+
+      bool res =
+          await PreferenceManager().updateRecall(widget.type, widget.recall);
+      if (res) {
+        setState(() {});
+      }
     }
   }
 
@@ -296,7 +312,7 @@ class _RecallDetailsState extends State<RecallDetails> {
                         ),
                         ActionPill(
                           text: "Add Files",
-                          action: () {},
+                          action: _addFiles,
                         ),
                       ],
                     ),
