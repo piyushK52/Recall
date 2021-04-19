@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:googleapis_auth/auth.dart';
 import 'package:recall/models/recall_model.dart';
 import 'package:recall/values/app_constants.dart';
 import 'package:recall/values/current_data.dart';
@@ -63,6 +64,41 @@ class PreferenceManager {
 
   clearAllData() async {
     _sharedPreferences = await SharedPreferences.getInstance();
-    return await _sharedPreferences.clear();
+    var auth = _sharedPreferences.getString("auth");
+    await _sharedPreferences.clear();
+    return await _sharedPreferences.setString("auth", auth);
+  }
+
+  getData(key) async {
+    _sharedPreferences = await SharedPreferences.getInstance();
+    return _sharedPreferences.getString(key);
+  }
+
+  // google driver methods
+  //Save Credentials
+  Future saveCredentials(AccessToken token, String refreshToken) async {
+    print(token.expiry.toIso8601String());
+    Map<String, dynamic> auth = {
+      "type": token.type,
+      "data": token.data,
+      "expiry": token.expiry.toString(),
+      "refreshToken": refreshToken
+    };
+    _sharedPreferences = await SharedPreferences.getInstance();
+    _sharedPreferences.setString('auth', jsonEncode(auth));
+  }
+
+  //Get Saved Credentials
+  Future<Map<String, dynamic>> getCredentials() async {
+    _sharedPreferences = await SharedPreferences.getInstance();
+    var result = _sharedPreferences.getString("auth");
+    if (result == null || result.length == 0) return null;
+    return jsonDecode(result);
+  }
+
+  //Clear Saved Credentials
+  Future clear() async {
+    _sharedPreferences = await SharedPreferences.getInstance();
+    return _sharedPreferences.setString('auth', '');
   }
 }

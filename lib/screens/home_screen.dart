@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:recall/screens/create_recall.dart';
 import 'package:recall/screens/recall_list.dart';
 import 'package:recall/screens/splash_screen.dart';
+import 'package:recall/utils/google_drive.dart';
 import 'package:recall/utils/helper_methods.dart';
 import 'package:recall/utils/preference_manager.dart';
 import 'package:recall/values/app_constants.dart';
 import 'package:recall/values/current_data.dart';
 import 'package:recall/values/custom_app_theme.dart';
 import 'package:recall/widgets/custom_tabs.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = "/home-screen";
@@ -19,6 +22,22 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   double _height, _width;
   final rebuildNotifier = ValueNotifier<int>(0);
+  final drive = GoogleDrive();
+
+  _uploadCurData() async {
+    Directory appDocumentsDirectory = await getTemporaryDirectory(); // 1
+    String appDocumentsPath = appDocumentsDirectory.path; // 2
+    String filePath = '$appDocumentsPath/habits.txt';
+
+    File file = File(filePath);
+    String habitData = await PreferenceManager().getData('habit');
+    print("writing data $habitData");
+    file.writeAsString(habitData.toString());
+
+    var res = await drive.upload(file);
+    print("******************");
+    print(res);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,31 +90,69 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: CustomAppTheme.heading1,
                       ),
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        HelperMethods.showAlertDialog(
-                            context: context,
-                            str1: 'Cancel',
-                            fun1: popPage,
-                            str2: 'Continue',
-                            fun2: clearAll,
-                            title: "Clear All Data",
-                            desc: "Are you sure you want to clear all data?");
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: CustomAppTheme.primaryColor.withOpacity(0.3),
-                          borderRadius: BorderRadius.circular(3),
-                        ),
-                        child: Text(
-                          "Clear All Data",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
+                    Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            HelperMethods.showAlertDialog(
+                                context: context,
+                                str1: 'Cancel',
+                                fun1: popPage,
+                                str2: 'Continue',
+                                fun2: clearAll,
+                                title: "Clear All Data",
+                                desc:
+                                    "Are you sure you want to clear all data?");
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              color:
+                                  CustomAppTheme.primaryColor.withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(3),
+                            ),
+                            child: Text(
+                              "Clear All Data",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            // HelperMethods.showAlertDialog(
+                            //     context: context,
+                            //     str1: 'Cancel',
+                            //     fun1: popPage,
+                            //     str2: 'Continue',
+                            //     fun2: clearAll,
+                            //     title: "Clear All Data",
+                            //     desc: "Are you sure you want to clear all data?");
+                            print('uploading file');
+                            _uploadCurData();
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              color:
+                                  CustomAppTheme.primaryColor.withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(3),
+                            ),
+                            child: Text(
+                              "Upload",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
