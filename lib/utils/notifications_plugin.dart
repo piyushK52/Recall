@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -20,8 +21,7 @@ class NotificationPlugin {
   initializePlatformSpecifics() {
     var initializeSettings = AndroidInitializationSettings('app_notif_icon');
 
-    initializationSettings =
-        InitializationSettings(android: initializeSettings);
+    initializationSettings = InitializationSettings(initializeSettings, null);
   }
 
   setOnNotificationClick(Function onNotificationClick) async {
@@ -38,15 +38,40 @@ class NotificationPlugin {
       'RECALLS',
       'RECALL_NOTIF',
       'REVISION_NOTIF',
-      importance: Importance.max,
-      priority: Priority.high,
+      importance: Importance.Max,
+      priority: Priority.High,
     );
 
     var platformChannelSpecifics =
-        NotificationDetails(android: androidChannelSpecifics);
+        NotificationDetails(androidChannelSpecifics, null);
     await flutterLocalNotificationsPlugin.show(
         0, 'Test', 'description', platformChannelSpecifics,
         payload: 'test payload');
+  }
+
+  Future<void> scheduleNotification() async {
+    var scheduleNotificationDateTime = DateTime.now().add(
+      Duration(seconds: 10),
+    );
+    var androidChannelSpecifics = AndroidNotificationDetails(
+      'RECALLS',
+      'RECALL_NOTIF',
+      'REVISION_NOTIF',
+      importance: Importance.Max,
+      priority: Priority.High,
+    );
+
+    var platformChannelSpecifics =
+        NotificationDetails(androidChannelSpecifics, null);
+    await flutterLocalNotificationsPlugin.schedule(
+      0,
+      'Test',
+      'description',
+      scheduleNotificationDateTime,
+      platformChannelSpecifics,
+      payload: 'test payload',
+      androidAllowWhileIdle: true,
+    );
   }
 }
 

@@ -133,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             //     desc:
                             //         "Are you sure you want to clear all data?");
                             print("sending notification");
-                            await notificationPlugin.showNotification();
+                            await notificationPlugin.scheduleNotification();
                           },
                           child: Container(
                             padding: EdgeInsets.all(5),
