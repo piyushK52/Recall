@@ -4,6 +4,7 @@ import 'package:recall/screens/recall_list.dart';
 import 'package:recall/screens/splash_screen.dart';
 import 'package:recall/utils/google_drive.dart';
 import 'package:recall/utils/helper_methods.dart';
+import 'package:recall/utils/notifications_plugin.dart';
 import 'package:recall/utils/preference_manager.dart';
 import 'package:recall/values/app_constants.dart';
 import 'package:recall/values/current_data.dart';
@@ -23,6 +24,16 @@ class _HomeScreenState extends State<HomeScreen> {
   double _height, _width;
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final rebuildNotifier = ValueNotifier<int>(0);
+
+  @override
+  void initState() {
+    super.initState();
+    notificationPlugin.setOnNotificationClick(onNotificationClick);
+  }
+
+  onNotificationClick(String payload) {
+    print('Payload $payload');
+  }
 
   _getDriveData() {
     var drive = GoogleDrive();
@@ -111,16 +122,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     Row(
                       children: [
                         GestureDetector(
-                          onTap: () {
-                            HelperMethods.showAlertDialog(
-                                context: context,
-                                str1: 'Cancel',
-                                fun1: popPage,
-                                str2: 'Continue',
-                                fun2: clearAll,
-                                title: "Clear All Data",
-                                desc:
-                                    "Are you sure you want to clear all data?");
+                          onTap: () async {
+                            // HelperMethods.showAlertDialog(
+                            //     context: context,
+                            //     str1: 'Cancel',
+                            //     fun1: popPage,
+                            //     str2: 'Continue',
+                            //     fun2: clearAll,
+                            //     title: "Clear All Data",
+                            //     desc:
+                            //         "Are you sure you want to clear all data?");
+                            print("sending notification");
+                            await notificationPlugin.showNotification();
                           },
                           child: Container(
                             padding: EdgeInsets.all(5),
