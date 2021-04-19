@@ -21,22 +21,39 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   double _height, _width;
+  final scaffoldKey = GlobalKey<ScaffoldState>();
   final rebuildNotifier = ValueNotifier<int>(0);
-  final drive = GoogleDrive();
+
+  _getDriveData() {
+    var drive = GoogleDrive();
+    drive.listGoogleDriveFiles();
+  }
 
   _uploadCurData() async {
-    Directory appDocumentsDirectory = await getTemporaryDirectory(); // 1
+    var drive = GoogleDrive();
+    Directory appDocumentsDirectory =
+        await getApplicationDocumentsDirectory(); // 1
     String appDocumentsPath = appDocumentsDirectory.path; // 2
-    String filePath = '$appDocumentsPath/habits.txt';
+    String filePath =
+        '$appDocumentsPath/${AppConstants.HABIT_GOOGLE_DRIVE_FILE}';
 
-    File file = File(filePath);
-    String habitData = await PreferenceManager().getData('habit');
+    if (await File(filePath).exists()) {
+      print("previous file deleted");
+      File(filePath).delete();
+    }
+
+    File newFile = File(filePath);
+    String habitData = await PreferenceManager().getData('habit') ?? '';
     print("writing data $habitData");
-    file.writeAsString(habitData.toString());
+    newFile.writeAsString(habitData.toString());
 
-    var res = await drive.upload(file);
+    await drive.deleteFile(filename: AppConstants.HABIT_GOOGLE_DRIVE_FILE);
+    var res = await drive.upload(newFile);
     print("******************");
-    print(res);
+    if (res) {
+      HelperMethods.showSnackBar(
+          key: scaffoldKey, str: "File uploaded successfully");
+    }
   }
 
   @override
@@ -50,6 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
       value: CustomAppTheme.systemUiOverlayConstant,
       child: SafeArea(
         child: Scaffold(
+          key: scaffoldKey,
           backgroundColor: Colors.white,
           floatingActionButton: FloatingActionButton(
             onPressed: () {
@@ -145,6 +163,38 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             child: Text(
                               "Upload",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            // HelperMethods.showAlertDialog(
+                            //     context: context,
+                            //     str1: 'Cancel',
+                            //     fun1: popPage,
+                            //     str2: 'Continue',
+                            //     fun2: clearAll,
+                            //     title: "Clear All Data",
+                            //     desc: "Are you sure you want to clear all data?");
+                            print('fetching files');
+                            _getDriveData();
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              color:
+                                  CustomAppTheme.primaryColor.withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(3),
+                            ),
+                            child: Text(
+                              "Get",
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 color: Colors.white,
