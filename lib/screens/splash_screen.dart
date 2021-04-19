@@ -24,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
     List<RecallModel> habitList =
         await PreferenceManager().getRecallList(RecallType.HABIT);
     List<RecallModel> revisionList =
-        await PreferenceManager().getRecallList(RecallType.HABIT);
+        await PreferenceManager().getRecallList(RecallType.REVISION);
 
     CurrentData.habitList = habitList;
     CurrentData.revisionList = revisionList;
