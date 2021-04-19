@@ -137,7 +137,8 @@ class _RecallListState extends State<RecallList> {
                     ],
                   ),
                 ),
-                Expanded(
+                Container(
+                  width: 50,
                   child: Column(
                     children: [
                       Container(
