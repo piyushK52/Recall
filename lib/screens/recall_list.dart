@@ -72,20 +72,22 @@ class _RecallListState extends State<RecallList> {
             child: Row(
               children: [
                 // title
-                Container(
-                  padding: EdgeInsets.only(
-                    left: 20,
-                  ),
-                  width: 200,
-                  // color: Colors.lightBlue,
-                  child: Text(
-                    item.title,
-                    style: CustomAppTheme.heading2.copyWith(
-                        color: item.active
-                            ? CustomAppTheme.primaryColor
-                            : Colors.grey),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.only(
+                      left: 20,
+                    ),
+                    width: 200,
+                    // color: Colors.lightBlue,
+                    child: Text(
+                      item.title,
+                      style: CustomAppTheme.heading2.copyWith(
+                          color: item.active
+                              ? CustomAppTheme.primaryColor
+                              : Colors.grey),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ),
                 Container(
@@ -111,7 +113,7 @@ class _RecallListState extends State<RecallList> {
                         child: Text(
                           widget.type == RecallType.HABIT
                               ? item.completedSteps.toString()
-                              : (item.completedSteps / item.totalSteps)
+                              : (item.completedSteps / item.totalSteps * 100)
                                       .toString() +
                                   '%',
                           style: TextStyle(

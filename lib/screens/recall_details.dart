@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:recall/models/recall_model.dart';
 import 'package:recall/screens/session_list.dart';
+import 'package:recall/utils/helper_methods.dart';
 import 'package:recall/utils/preference_manager.dart';
 import 'package:recall/values/app_constants.dart';
 import 'package:recall/values/custom_app_theme.dart';
@@ -22,39 +23,56 @@ class RecallDetails extends StatefulWidget {
 }
 
 class _RecallDetailsState extends State<RecallDetails> {
+  final scaffoldKey = GlobalKey<ScaffoldState>();
   double _height, _width;
   RecallModel item;
 
   String _getUpcomingSession() {
     DateTime upcomingDate;
     if (widget.type == RecallType.REVISION) {
-      upcomingDate = widget.recall.sessions[widget.recall.completedSteps];
+      int idx = widget.recall.completedSteps >= widget.recall.sessions.length
+          ? widget.recall.sessions.length - 1
+          : widget.recall.completedSteps;
+      upcomingDate = widget.recall.sessions[idx];
     } else {
       int curDay = DateTime.now().weekday - 1;
-      int addDays = -1;
+      int addDays = -1, count = 0;
       print("current days selected ${widget.recall.days}");
-      for (int i = curDay + 1; i < 7; i++) {
-        if (widget.recall.days[i]) {
-          addDays = i - curDay;
+      // for (int i = curDay; i < 7; i++) {
+      //   if (widget.recall.days[i] && count++ == widget.recall.completedSteps) {
+      //     addDays = i - curDay;
+      //     break;
+      //   }
+      // }
+
+      // if (addDays == -1) {
+      //   for (int i = 0; i < 7; i++) {
+      //     if (widget.recall.days[i]) {
+      //       addDays = i;
+      //       break;
+      //     }
+      //   }
+
+      //   addDays += (6 - curDay);
+      //   print("next day is $addDays");
+      // }
+      //
+
+      //       DateTime present = DateTime.now();
+      // upcomingDate = DateTime(present.year, present.month, present.day)
+      //     .add(Duration(days: addDays + 1));
+
+      int addCount = 0;
+      for (int i = widget.recall.completedSteps;; i++) {
+        DateTime newDate =
+            widget.recall.notificationTime.add(Duration(days: i));
+        print("weekday is .... ${newDate.weekday}");
+        if (widget.recall.days[newDate.weekday - 1] &&
+            addCount++ == widget.recall.completedSteps) {
+          upcomingDate = newDate;
           break;
         }
       }
-
-      if (addDays == -1) {
-        for (int i = 0; i < 7; i++) {
-          if (widget.recall.days[i]) {
-            addDays = i;
-            break;
-          }
-        }
-
-        addDays += (6 - curDay);
-        print("next day is $addDays");
-      }
-
-      DateTime present = DateTime.now();
-      upcomingDate = DateTime(present.year, present.month, present.day)
-          .add(Duration(days: addDays + 1));
     }
 
     print(
@@ -128,6 +146,14 @@ class _RecallDetailsState extends State<RecallDetails> {
     }
   }
 
+  _getValue() {
+    return widget.type == RecallType.HABIT
+        ? item.completedSteps.toString() + ' Days streak'
+        : (item.completedSteps / item.totalSteps * 100).toString() +
+            '%' +
+            ' Done';
+  }
+
   @override
   Widget build(BuildContext context) {
     _height = MediaQuery.of(context).size.height -
@@ -146,6 +172,7 @@ class _RecallDetailsState extends State<RecallDetails> {
         },
         child: SafeArea(
           child: Scaffold(
+            key: scaffoldKey,
             backgroundColor: Colors.white,
             body: Container(
               height: _height,
@@ -193,7 +220,7 @@ class _RecallDetailsState extends State<RecallDetails> {
                               children: [
                                 Container(
                                   child: Text(
-                                    "Upcoming Session",
+                                    "Upcoming Session (" + _getValue() + ")",
                                     style: TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.w500,
@@ -246,6 +273,54 @@ class _RecallDetailsState extends State<RecallDetails> {
                         ),
                       ),
                     ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        width: 150,
+                        margin: EdgeInsets.only(
+                          top: 5,
+                          bottom: 5,
+                        ),
+                        child: _btn(
+                            action: () {
+                              print("marking as complete");
+                              int nextStep = widget.recall.completedSteps + 1;
+                              widget.recall.completedSteps =
+                                  nextStep > widget.recall.sessions.length &&
+                                          widget.type == RecallType.REVISION
+                                      ? widget.recall.sessions.length
+                                      : nextStep;
+                              HelperMethods.showSnackBar(
+                                  key: scaffoldKey,
+                                  str: 'Session completed!!!');
+                              _updateRecall();
+                            },
+                            text: 'Mark session as complete'),
+                      ),
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        width: 150,
+                        margin: EdgeInsets.only(
+                          top: 5,
+                          bottom: 5,
+                        ),
+                        child: _btn(
+                            action: () {
+                              print("marking as complete");
+                              int nextStep = widget.recall.completedSteps - 1;
+                              if (nextStep < 0) nextStep = 0;
+                              widget.recall.completedSteps = nextStep;
+                              HelperMethods.showSnackBar(
+                                  key: scaffoldKey,
+                                  str: 'Session marked incomplete!!!');
+                              _updateRecall();
+                            },
+                            text: 'Un-mark session as complete'),
+                      ),
+                    ],
                   ),
                   Material(
                     color: Colors.transparent,
@@ -329,6 +404,37 @@ class _RecallDetailsState extends State<RecallDetails> {
                 ],
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _btn({action, text}) {
+    return GestureDetector(
+      onTap: () {
+        action();
+      },
+      child: Container(
+        alignment: Alignment.center,
+        // height: 25,
+        padding: EdgeInsets.only(
+          left: 8,
+          right: 8,
+          top: 8,
+          bottom: 8,
+        ),
+        decoration: BoxDecoration(
+          color: CustomAppTheme.primaryColor.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: CustomAppTheme.darkPrimaryColor,
           ),
         ),
       ),
