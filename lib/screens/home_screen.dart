@@ -35,18 +35,31 @@ class _HomeScreenState extends State<HomeScreen> {
     print('Payload $payload');
   }
 
-  _getDriveData() {
+  _getDriveData() async {
     var drive = GoogleDrive();
-    drive.listGoogleDriveFiles();
+    bool res = await drive.listGoogleDriveFiles();
+    print("result found out ----- $res");
+    Future.delayed(Duration(milliseconds: 1000), () {
+      setState(() {
+        HelperMethods.fetchStoredLists();
+      });
+    });
   }
 
-  _uploadCurData() async {
+  _uploadDriveData() async {
+    await _uploadCurData(type: RecallType.HABIT);
+    await _uploadCurData(type: RecallType.REVISION);
+  }
+
+  _uploadCurData({type}) async {
     var drive = GoogleDrive();
     Directory appDocumentsDirectory =
         await getApplicationDocumentsDirectory(); // 1
     String appDocumentsPath = appDocumentsDirectory.path; // 2
-    String filePath =
-        '$appDocumentsPath/${AppConstants.HABIT_GOOGLE_DRIVE_FILE}';
+    String filePath = '$appDocumentsPath/' +
+        (type == RecallType.HABIT
+            ? '${AppConstants.HABIT_GOOGLE_DRIVE_FILE}'
+            : '${AppConstants.REVISION_GOOGLE_DRIVE_FILE}');
 
     if (await File(filePath).exists()) {
       print("previous file deleted");
@@ -54,16 +67,25 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     File newFile = File(filePath);
-    String habitData = await PreferenceManager().getData('habit') ?? '';
-    print("writing data $habitData");
-    newFile.writeAsString(habitData.toString());
+    String data = await PreferenceManager()
+            .getData(type == RecallType.HABIT ? 'habit' : 'revision') ??
+        '';
+    print("writing data $data");
+    newFile.writeAsString(data.toString());
 
-    await drive.deleteFile(filename: AppConstants.HABIT_GOOGLE_DRIVE_FILE);
+    await drive.deleteFile(
+        filename: type == RecallType.HABIT
+            ? AppConstants.HABIT_GOOGLE_DRIVE_FILE
+            : AppConstants.REVISION_GOOGLE_DRIVE_FILE);
     var res = await drive.upload(newFile);
     print("******************");
     if (res) {
       HelperMethods.showSnackBar(
           key: scaffoldKey, str: "File uploaded successfully");
+      return true;
+    } else {
+      HelperMethods.showSnackBar(key: scaffoldKey, str: "Operation Failed...");
+      return false;
     }
   }
 
@@ -165,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             //     title: "Clear All Data",
                             //     desc: "Are you sure you want to clear all data?");
                             print('uploading file');
-                            _uploadCurData();
+                            _uploadDriveData();
                           },
                           child: Container(
                             padding: EdgeInsets.all(5),

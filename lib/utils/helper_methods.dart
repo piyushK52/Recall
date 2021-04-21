@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:recall/models/recall_model.dart';
 import 'package:recall/utils/preference_manager.dart';
+import 'package:recall/values/app_constants.dart';
 import 'package:recall/values/current_data.dart';
 
 class HelperMethods {
@@ -18,6 +20,16 @@ class HelperMethods {
     }
 
     return 'pdf';
+  }
+
+  static fetchStoredLists() async {
+    List<RecallModel> habitList =
+        await PreferenceManager().getRecallList(RecallType.HABIT);
+    List<RecallModel> revisionList =
+        await PreferenceManager().getRecallList(RecallType.REVISION);
+
+    CurrentData.habitList = habitList;
+    CurrentData.revisionList = revisionList;
   }
 
   static showSnackBar({key, String str}) {

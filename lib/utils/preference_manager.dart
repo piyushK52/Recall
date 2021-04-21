@@ -74,6 +74,11 @@ class PreferenceManager {
     return _sharedPreferences.getString(key);
   }
 
+  setData(key, value) async {
+    _sharedPreferences = await SharedPreferences.getInstance();
+    return _sharedPreferences.setString(key, value);
+  }
+
   // google driver methods
   //Save Credentials
   Future saveCredentials(AccessToken token, String refreshToken) async {
