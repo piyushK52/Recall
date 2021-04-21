@@ -30,6 +30,7 @@ class _RecallDetailsState extends State<RecallDetails> {
   String _getUpcomingSession() {
     DateTime upcomingDate;
     if (widget.type == RecallType.REVISION) {
+      _shiftSchedule();
       int idx =
           widget.recall.completedSteps >= widget.recall.sessions.length + 1
               ? widget.recall.sessions.length - 1
@@ -43,33 +44,6 @@ class _RecallDetailsState extends State<RecallDetails> {
       }
       upcomingDate = widget.recall.sessions[idx];
     } else {
-      int curDay = DateTime.now().weekday - 1;
-      int addDays = -1, count = 0;
-      print("current days selected ${widget.recall.days}");
-      // for (int i = curDay; i < 7; i++) {
-      //   if (widget.recall.days[i] && count++ == widget.recall.completedSteps) {
-      //     addDays = i - curDay;
-      //     break;
-      //   }
-      // }
-
-      // if (addDays == -1) {
-      //   for (int i = 0; i < 7; i++) {
-      //     if (widget.recall.days[i]) {
-      //       addDays = i;
-      //       break;
-      //     }
-      //   }
-
-      //   addDays += (6 - curDay);
-      //   print("next day is $addDays");
-      // }
-      //
-
-      //       DateTime present = DateTime.now();
-      // upcomingDate = DateTime(present.year, present.month, present.day)
-      //     .add(Duration(days: addDays + 1));
-
       int addCount = 0;
       for (int i = 0;; i++) {
         DateTime newDate =
@@ -77,7 +51,23 @@ class _RecallDetailsState extends State<RecallDetails> {
         print("weekday is .... ${newDate.weekday}");
         if (widget.recall.days[newDate.weekday - 1] &&
             addCount++ == widget.recall.completedSteps) {
-          upcomingDate = newDate;
+          DateTime today = DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day);
+          // if the date selected is after today
+          if (DateTime(newDate.year, newDate.month, newDate.day)
+              .isAfter(today)) {
+            upcomingDate = newDate;
+          }
+          // else selecting any date that is after today
+          else {
+            for (int j = 1;; j++) {
+              newDate = today.add(Duration(days: j));
+              if (widget.recall.days[newDate.weekday - 1]) {
+                upcomingDate = newDate;
+                break;
+              }
+            }
+          }
           break;
         }
       }
@@ -94,6 +84,31 @@ class _RecallDetailsState extends State<RecallDetails> {
         widget.recall.notificationTime.minute);
 
     return DateFormat("dd MMM yyyy hh:mm a").format(upcomingDate).toString();
+  }
+
+  // if any day is not completed in-between then the schedule is changed for revision
+  _shiftSchedule() {
+    if (widget.type == RecallType.REVISION) {
+      List<DateTime> list = widget.recall.sessions;
+      DateTime today = DateTime(
+          DateTime.now().year, DateTime.now().month, DateTime.now().day);
+      for (int i = 0; i < list.length; i++) {
+        // if this was before today and should have been completed
+        if (DateTime(list[i].year, list[i].month, list[i].day)
+                .isBefore(today) &&
+            i >= widget.recall.completedSteps) {
+          int diff = today.difference(list[i]).inDays;
+          print(
+              "shifting days*********** ${today.toString()} ${list[i].toString()} $diff");
+          for (int j = i; j < list.length; j++) {
+            widget.recall.sessions[j] =
+                widget.recall.sessions[j].add(Duration(days: diff + 1));
+          }
+          _updateRecall();
+          break;
+        }
+      }
+    }
   }
 
   String _getActionPillText() {
@@ -296,11 +311,11 @@ class _RecallDetailsState extends State<RecallDetails> {
                             action: () {
                               print("marking as complete");
                               int nextStep = widget.recall.completedSteps + 1;
-                              widget.recall.completedSteps = nextStep >
-                                          widget.recall.sessions.length + 1 &&
-                                      widget.type == RecallType.REVISION
-                                  ? widget.recall.sessions.length + 1
-                                  : nextStep;
+                              widget.recall.completedSteps =
+                                  nextStep > widget.recall.sessions.length &&
+                                          widget.type == RecallType.REVISION
+                                      ? widget.recall.sessions.length
+                                      : nextStep;
                               HelperMethods.showSnackBar(
                                   key: scaffoldKey,
                                   str: 'Session completed!!!');

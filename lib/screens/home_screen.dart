@@ -123,17 +123,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         GestureDetector(
                           onTap: () async {
-                            // HelperMethods.showAlertDialog(
-                            //     context: context,
-                            //     str1: 'Cancel',
-                            //     fun1: popPage,
-                            //     str2: 'Continue',
-                            //     fun2: clearAll,
-                            //     title: "Clear All Data",
-                            //     desc:
-                            //         "Are you sure you want to clear all data?");
-                            print("sending notification");
-                            await notificationPlugin.scheduleNotification();
+                            HelperMethods.showAlertDialog(
+                                context: context,
+                                str1: 'Cancel',
+                                fun1: popPage,
+                                str2: 'Continue',
+                                fun2: clearAll,
+                                title: "Clear All Data",
+                                desc:
+                                    "Are you sure you want to clear all data?");
+                            // print("sending notification");
+                            // await notificationPlugin.scheduleNotification();
                           },
                           child: Container(
                             padding: EdgeInsets.all(5),
