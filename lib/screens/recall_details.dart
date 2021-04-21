@@ -30,9 +30,17 @@ class _RecallDetailsState extends State<RecallDetails> {
   String _getUpcomingSession() {
     DateTime upcomingDate;
     if (widget.type == RecallType.REVISION) {
-      int idx = widget.recall.completedSteps >= widget.recall.sessions.length
-          ? widget.recall.sessions.length - 1
-          : widget.recall.completedSteps;
+      int idx =
+          widget.recall.completedSteps >= widget.recall.sessions.length + 1
+              ? widget.recall.sessions.length - 1
+              : widget.recall.completedSteps;
+
+      print(
+          'index right now ${widget.recall.completedSteps} ${widget.recall.sessions.length}');
+
+      if (widget.recall.completedSteps == widget.recall.sessions.length) {
+        return 'Completed';
+      }
       upcomingDate = widget.recall.sessions[idx];
     } else {
       int curDay = DateTime.now().weekday - 1;
@@ -288,11 +296,11 @@ class _RecallDetailsState extends State<RecallDetails> {
                             action: () {
                               print("marking as complete");
                               int nextStep = widget.recall.completedSteps + 1;
-                              widget.recall.completedSteps =
-                                  nextStep > widget.recall.sessions.length &&
-                                          widget.type == RecallType.REVISION
-                                      ? widget.recall.sessions.length
-                                      : nextStep;
+                              widget.recall.completedSteps = nextStep >
+                                          widget.recall.sessions.length + 1 &&
+                                      widget.type == RecallType.REVISION
+                                  ? widget.recall.sessions.length + 1
+                                  : nextStep;
                               HelperMethods.showSnackBar(
                                   key: scaffoldKey,
                                   str: 'Session completed!!!');

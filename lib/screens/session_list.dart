@@ -43,7 +43,7 @@ class SessionList extends StatelessWidget {
               type == RecallType.REVISION
                   ? Expanded(
                       child: ListView.builder(
-                      itemCount: item.sessions.length,
+                      itemCount: item.sessions.length + 1,
                       itemBuilder: (ctx, index) {
                         return _sessionItem(index);
                       },
@@ -88,9 +88,12 @@ class SessionList extends StatelessWidget {
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(cirleDia / 2),
-                    color: index + 1 > item.completedSteps
-                        ? deactiveColor
-                        : activeColor,
+                    color: index == item.sessions.length &&
+                            index == item.completedSteps
+                        ? activeColor
+                        : (index + 1 > item.completedSteps
+                            ? deactiveColor
+                            : activeColor),
                   ),
                   child: Text(
                     (index + 1).toString(),
@@ -100,7 +103,7 @@ class SessionList extends StatelessWidget {
                     ),
                   ),
                 ),
-                index != item.sessions.length - 1
+                index != item.sessions.length
                     ? Container(
                         height: 60,
                         width: 10,
@@ -124,13 +127,23 @@ class SessionList extends StatelessWidget {
               top: cirleDia / 2 - 10,
               left: 20,
             ),
-            child: Text(
-              DateFormat('dd MMM yyyy   hh:mm a').format(item.sessions[index]) +
-                  (index != 0 ? '  ( ${getPendingDays(index)} Days )' : ''),
-              style: TextStyle(
-                fontSize: 15,
-              ),
-            ),
+            child: index < item.sessions.length
+                ? Text(
+                    DateFormat('dd MMM yyyy   hh:mm a')
+                            .format(item.sessions[index]) +
+                        (index != 0
+                            ? '  ( ${getPendingDays(index)} Days )'
+                            : ''),
+                    style: TextStyle(
+                      fontSize: 15,
+                    ),
+                  )
+                : Text(
+                    "Completed",
+                    style: TextStyle(
+                      fontSize: 15,
+                    ),
+                  ),
           ),
         ],
       ),
