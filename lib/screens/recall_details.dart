@@ -63,7 +63,7 @@ class _RecallDetailsState extends State<RecallDetails> {
       //     .add(Duration(days: addDays + 1));
 
       int addCount = 0;
-      for (int i = widget.recall.completedSteps;; i++) {
+      for (int i = 0;; i++) {
         DateTime newDate =
             widget.recall.notificationTime.add(Duration(days: i));
         print("weekday is .... ${newDate.weekday}");
