@@ -324,6 +324,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   clearAll() async {
+    await PreferenceManager().clear();
     bool res = await PreferenceManager().clearAllData();
     print('result -> $res');
     if (res) {
